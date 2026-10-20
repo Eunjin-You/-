@@ -25,12 +25,30 @@
   const mins = (n) => `${Math.max(0, Math.round(Number(n) || 0))}분`;
   const initial = () => ({ version: 1, projects: [], days: {}, sessions: [], entries: [], activeSession: null });
   let state;
-  try { const saved = JSON.parse(localStorage.getItem(KEY) || 'null'); state = saved && Array.isArray(saved.projects) && saved.days && Array.isArray(saved.entries) ? { ...initial(), ...saved } : initial(); }
-  catch { state = initial(); }
+try {
+  const saved = JSON.parse(sessionStorage.getItem(KEY) || 'null');
+
+  state =
+    saved &&
+    Array.isArray(saved.projects) &&
+    saved.days &&
+    Array.isArray(saved.entries)
+      ? { ...initial(), ...saved }
+      : initial();
+
+} catch {
+  state = initial();
+}
 
   const ui = { screen: state.projects.length ? 'home' : 'welcome', projectId: null, phaseId: null, planId: null, selectedMode: 'steady', selectedFeeling: '', ready: 'yes', focusTarget: 25, checkoutResult: 'completed', rewardEntryId: null };
   const app = document.getElementById('app');
-  const save = () => { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch { toast('저장 공간이 부족합니다. 브라우저 설정을 확인해주세요.'); } };
+ const save = () => {
+  try {
+    sessionStorage.setItem(KEY, JSON.stringify(state));
+  } catch {
+    toast('저장 공간이 부족합니다. 브라우저 설정을 확인해주세요.');
+  }
+};
   const project = (id = ui.projectId) => state.projects.find(x => x.id === id);
   const phase = (p = project(), id = ui.phaseId) => p?.phases.find(x => x.id === id);
   const day = (date = localDate()) => state.days[date] || null;
